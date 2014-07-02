@@ -1,0 +1,47 @@
+<head>
+    <title>Fields3 Demo</title>
+</head>
+
+<body>
+    <p><button class='button add-movie'>Add Movie</button></p>
+    
+    <!-- two primary use cases -->
+    <!-- EDITING a.k.a. entering the content -->
+    {{> editContent}}
+    
+    <!-- VIEWING a.k.a. accessing/displaying the content -->
+    {{> viewContent}}
+    
+</body>
+
+<template name="editContent">
+    <h2>Edit Movies</h2>
+    {{#each movies}}
+    <p>Some content</p>
+    {{#field name}}
+    <span>Name:&nbsp;</span>
+    {{#if ready}}
+    <span class="input-append">
+    <input type="text" class="{{inputId}}" value="{{value}}" caption='SomeValue' />
+    {{#if saveable}}
+    <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
+    {{/if}}
+    {{#if discardable}}
+    <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
+    {{/if}}
+    </span>
+    {{/if}}
+    {{/field}}
+    {{/each}}
+</template>
+
+<template name="viewContent">
+    <h2>View Movies</h2>
+    {{#each movies}}
+    <p>Some content</p>
+    {{#field name}}
+    <span>{{label}}:&nbsp;</span><span>{{value}}</span>
+    {{/field}}
+    <hr/>
+    {{/each}}
+</template>
