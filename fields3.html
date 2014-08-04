@@ -15,14 +15,14 @@
 </body>
 
 <template name="editContent">
-    <h2>Edit Movies</h2>
+    <h1>Edit Movies</h1>
     {{#each movies}}
-    <p>Some content</p>
+    <h2>Movie: {{#field name}}{{unsavedValue}}{{/field}}</h2>
     {{#field name}}
-    <span>Name:&nbsp;</span>
+    <p>Name:&nbsp;
     {{#if ready}}
     <span class="input-append">
-    <input type="text" class="{{inputId}}" value="{{value}}" caption='SomeValue' />
+    <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
     {{#if saveable}}
     <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
     {{/if}}
@@ -31,12 +31,61 @@
     {{/if}}
     </span>
     {{/if}}
+    </p>
     {{/field}}
+    
+    {{#list actors}}
+    {{!--
+    <h3>Actors:</h3>
+    <ul class="thumbnails">
+        {{#each items}}
+        <li class="span4">
+        {{#field actorName}}
+        <div>
+        <span>Name:&nbsp;</span>
+        {{#if ready}}
+        <span class="input-append">
+        <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
+        {{#if saveable}}
+        <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
+        {{/if}}
+        {{#if discardable}}
+        <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
+        {{/if}}
+        </span>
+        {{/if}}
+        </div>
+        {{/field}}
+        
+        {{#field actorCountry}}
+        <div>
+        <span>Country:&nbsp;</span>
+        {{#if ready}}
+        <span class="input-append">
+        <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
+        {{#if saveable}}
+        <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
+        {{/if}}
+        {{#if discardable}}
+        <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
+        {{/if}}
+        </span>
+        {{/if}}
+        </div>
+        {{/field}}
+        </li>
+        {{/each}}
+    </ul>
+    <button class="btn btn-small {{addId}}"><i class="icon-plus"></i></button>
+    --}}
+    
+    {{/list}}
+    
     {{/each}}
 </template>
 
 <template name="viewContent">
-    <h2>View Movies</h2>
+    <h1>View Movies</h1>
     {{#each movies}}
     <p>Some content</p>
     {{#field name}}

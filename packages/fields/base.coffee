@@ -2,17 +2,22 @@ Fields = {}
 @Fields = Fields
 
 
-class Fields.TextField
+class Fields._BaseField
     _ready: false
     
-    
+    #para spec
+    # name: 'named identifier for ref. object'
+    # refId: 'external reference object'
+    # partOf: 'optional parent container'
+    # events: eventSpec
+    #
     #events spec
     #
     # save:
     #   type: 'click'
     #   selector: '.save_button'
-    #   callback: (e) ->
-    #        @save()
+    #   callback: (e, field) ->
+    #        field.save()
     # update: 
     #   type: 'keyup'
     #   selector: undefined
@@ -21,59 +26,20 @@ class Fields.TextField
     #   selector: '.discard_button'
     #
     
-    constructor: (@_name, @_refId, _events) ->
+    constructor: (para) ->
         self = @
+        
+        self._name = para.name
+        self._refId = para.refId
+        self._partOf = para.partOf
+        self.c_events = para.events
+        
         self._loadDeps = new Deps.Dependency
         self._valueDeps = new Deps.Dependency
         self.saveId = "#{@_name}#{@_refId}save"
         self.inputId = "#{@_name}#{@_refId}input"
         self.discardId = "#{@_name}#{@_refId}discard"
         
-        eventMap = {}
-        updFun = (e) ->
-            @update e.currentTarget.value
-        saveFun = (e) ->
-            @save()
-        discFun = (e) ->
-            @discard()
-        
-        dispatchEvents = (event, defaultType, defaultSelector, defaultFun) ->
-            unless event?
-                event = {}
-                
-            key = ""
-            if event.type?
-                key += "#{event.type} "
-            else
-                key += "#{defaultType} "
-            
-            if event.selector?
-                key += event.selector
-            else
-                key += defaultSelector
-            
-            if event.callback?
-                eventMap[key] = (e) ->
-                    event.callback.call self, e
-            else
-                eventMap[key] = (e) ->
-                    defaultFun.call self, e
-            
-        
-        if _events?
-            dispatchEvents _events.update, 'keyup', ".#{self.inputId}", updFun
-            dispatchEvents _events.save, 'click', ".#{self.saveId}", saveFun
-            dispatchEvents _events.discard, 'click', ".#{self.discardId}", discFun
-        else
-            eventMap["keyup .#{self.inputId}"] = (e) ->
-                updFun.call self, e
-            eventMap["click .#{self.saveId}"] = (e) ->
-                saveFun.call self, e
-            eventMap["click .#{self.discardId}"] = (e) ->
-                discFun.call self, e
-            
-        _registerEvents eventMap
-            
         Meteor.autorun () ->
             Meteor.subscribe '_fields_data', self._refId, self._name, () ->
                 self._ready = true
@@ -92,8 +58,8 @@ class Fields.TextField
         @_valueDeps.depend()
         d = Unsaved.dirty @_name, @_refId
         d
-    
-    value: () ->
+        
+    unsavedValue: () ->
         @_valueDeps.depend()
         
         value = '...loading...'
@@ -107,8 +73,20 @@ class Fields.TextField
                     value = d[self._name]
                 else
                     value = ''
+        value
         
-        console.log value, self
+    value: () ->
+        self = @
+        
+        self._valueDeps.depend()
+        value = '...loading...'
+        if self.ready()
+            d = Data.findOne self._id
+            if d?
+                value = d[self._name]
+            else
+                value = ''
+        
         value
         
     update: (newValue) ->
@@ -117,7 +95,6 @@ class Fields.TextField
     
     save: () ->
         self = @
-        console.log self
         if self.dirty()
             value = Unsaved.get self._name, self._refId
             
@@ -128,6 +105,13 @@ class Fields.TextField
             
             Unsaved.reset self._name, self._refId
             self._valueDeps.changed()
+
+    _init: (value) ->
+        self = @
+
+        val = {}
+        val[self._name] = value
+        Data.update {_id: self._id}, {$set: val}
         
     discard: () ->
         Unsaved.reset @_name, @_refId
@@ -144,4 +128,5 @@ class Fields.TextField
     discardable: () ->
         @_valueDeps.depend()
         @dirty()
+    
     
