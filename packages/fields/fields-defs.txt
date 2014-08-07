@@ -1,0 +1,4 @@
+_id -> the current objects Mongo ID
+refId -> THE internal reference id, the current object belongs to. For entry points it's the same as extRef.
+extRef -> An optional external reference. Mandatory for entry points, e.g. the external object a form is created for.
+partOf -> An optional internal reference id, the current object is a part of.

@@ -41,8 +41,10 @@ if Meteor.isClient
         Movies.find {}
     
     Template.viewContent.name = () ->
-        new Fields.TextField 'name', @_id
-        
+        new Fields.TextField
+            name: 'name'
+            refId: @_id
+
     Template.editContent.movies = () ->
         Movies.find {}
         
@@ -53,22 +55,15 @@ if Meteor.isClient
             refId: self._id, 
             items: Actors.find({movieId: self._id}).fetch()
         
-        list.registerCallbacks
-            #in case of external ref object, must return new element id.
-            append: (event) ->
-                Actors.insert {movieId: self._id}
-            prepend: (event) ->
-                Actors.insert {movieId: self._id}
-            insert: (event) ->
-                Actors.insert {movieId: self._id}
-            remove: (event, element, pos) ->
-                Actors.remove {_id: element._id}
-            move: (event, element, oldPos, newPos) ->
-        
+        list.onAppend (event) ->
+            Actors.insert {movieId: self._id}
+        list.onRemove (event, element, pos) ->
+            Actors.remove {_id: element._id}
+
         #list.sortBy
         #    field: 'actorName'
         #    dir: 1
-        #list
+        list
         
     Template.editContent.name = () ->
         new Fields.TextField 

@@ -34,6 +34,8 @@ Package.on_use(function (api) {
    api.add_files('changes.coffee', ['client']);
    
    api.add_files('simple-text.coffee',['client']);
+
+   api.add_files('server-methods.coffee',['server']);
    
    api.export('Fields');
    

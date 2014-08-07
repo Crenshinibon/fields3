@@ -31,8 +31,12 @@ class Fields._BaseField
         
         self._name = para.name
         self._refId = para.refId
+
         self._partOf = para.partOf
-        self.c_events = para.events
+        unless self._partOf?
+            self._extRef = para.refId
+
+        self._events = para.events
         
         self._loadDeps = new Deps.Dependency
         self._valueDeps = new Deps.Dependency
@@ -45,8 +49,11 @@ class Fields._BaseField
                 self._ready = true
                 self._id = Data.findOne({refId: self._refId})._id
                 self._loadDeps.changed()
-                
-    
+
+                if para.isReady? and para.isReady? and para.isReady.length > 0
+                    para.isReady.forEach (e) ->
+                        e.call self
+
     loading: () ->
         !@ready()
     
@@ -84,6 +91,8 @@ class Fields._BaseField
             d = Data.findOne self._id
             if d?
                 value = d[self._name]
+                unless value?
+                    value = ''
             else
                 value = ''
         

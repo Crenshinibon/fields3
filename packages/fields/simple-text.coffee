@@ -8,13 +8,7 @@ class Fields.TextField extends Fields._BaseField
         self = @
         
         eventMap = {}
-        updFun = (e, field) ->
-            field.update e.currentTarget.value
-        saveFun = (e, field) ->
-            field.save()
-        discFun = (e, field) ->
-            field.discard()
-        
+
         dispatchEvents = (event, defaultType, defaultSelector, defaultFun) ->
             unless event?
                 event = {}
@@ -37,18 +31,26 @@ class Fields.TextField extends Fields._BaseField
                 eventMap[key] = (e) ->
                     defaultFun.call @, e, self
             
-        
-        if @_events?
-            dispatchEvents @_events.update, 'keyup', ".#{self.inputId}", updFun
-            dispatchEvents @_events.save, 'click', ".#{self.saveId}", saveFun
-            dispatchEvents @_events.discard, 'click', ".#{self.discardId}", discFun
+        if @_events?.update?
+            dispatchEvents @_events.update, 'keyup', ".#{self.inputId}",  (e, field) ->
+                field.update e.currentTarget.value
         else
             eventMap["keyup .#{self.inputId}"] = (e) ->
-                updFun.call @, e, self
+                self.update e.currentTarget.value
+
+        if @_events?.save?
+            dispatchEvents @_events.save, 'click', ".#{self.saveId}", (e, field) ->
+                field.save()
+        else
             eventMap["click .#{self.saveId}"] = (e) ->
-                saveFun.call @, e, self
+                self.save()
+
+        if @_events?.discard?
+            dispatchEvents @_events.discard, 'click', ".#{self.discardId}", (e, field) ->
+                field.discard()
+        else
             eventMap["click .#{self.discardId}"] = (e) ->
-                discFun.call @, e, self
+                self.discard()
             
         _registerFieldEvents eventMap
         

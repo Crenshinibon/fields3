@@ -35,7 +35,6 @@
     {{/field}}
     
     {{#list actors}}
-    {{!--
     <h3>Actors:</h3>
     <ul class="thumbnails">
         {{#each items}}
@@ -76,9 +75,7 @@
         </li>
         {{/each}}
     </ul>
-    <button class="btn btn-small {{addId}}"><i class="icon-plus"></i></button>
-    --}}
-    
+    <button class="btn btn-small {{appendId}}"><i class="icon-plus"></i></button>
     {{/list}}
     
     {{/each}}
@@ -89,7 +86,7 @@
     {{#each movies}}
     <p>Some content</p>
     {{#field name}}
-    <span>{{label}}:&nbsp;</span><span>{{value}}</span>
+    <span>Name:&nbsp;</span><span>{{value}}</span>
     {{/field}}
     <hr/>
     {{/each}}
