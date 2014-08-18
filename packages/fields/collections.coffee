@@ -1,41 +1,80 @@
 @Data = new Meteor.Collection 'fields_data'
-@Changes = new Meteor.Collection 'fields_changes'
-
+@Lists = new Meteor.Collection 'fields_lists'
 
 if Meteor.isServer
-    Meteor.publish '_fields_data', (refId, field) ->
-        fieldSelector = {}
-        fieldSelector.refId = 1
-        fieldSelector[field] = 1
-        existing = Data.find {refId: refId}, {fields: fieldSelector}
-        
+
+    _createForm = (refId, fieldName, fieldValue) ->
+        newField =
+            _refId: refId
+        newField[fieldName] = fieldValue
+
+        Data.insert newField
+
+    _createList = (listSpec) ->
+        existingList = Lists.findOne {_refId: listSpec.refId, _listName: listSpec.listName}
+        unless existingList?
+            newList =
+                _refId: listSpec.refId
+                _listName: listSpec.listName
+                _items: []
+            id = Lists.insert newList
+            existingList = Lists.findOne {_id: id}
+
+        existingForm = Data.findOne {_refId: listSpec.refId}
+        unless existingForm?
+            id = _createForm listSpec.refId, listSpec.listName, existingList._id
+            existingForm = Data.findOne {_id: id}
+
+        unless existingForm[listSpec.listName]?
+            val = {}
+            val[listSpec.listName] = existingList._id
+            Data.update {_id: existingForm._id}, {$set: val}
+
+        existingList
+
+    Meteor.publish '_fields_lists', (listSpec) ->
+        existing = Lists.find {_refId: listSpec.refId, _listName: listSpec.listName}, {fields: {_items: 1, _refId: 1, _listName: 1}}
         if existing.count() is 0
-            #setup new field with empty string value
-            newField = 
-                refId: refId
-            newField[field] = ''
-            
-            Data.insert newField
-            existing = Data.find {refId: refId}, {fields: fieldSelector}
-        
+            created = _createList listSpec
+            existing = Lists.find {_id: created._id}, {fields: {_items: 1, _refId: 1, _listName: 1}}
         existing
-        
-    Meteor.publish '_fields_all_data', (refId) ->
-        Data.findOne {refId: refId}
-    
+
+
+    Meteor.methods
+        _fields_init_ext_list_item: (para) ->
+            Data.insert {_refId: para.refId, _extRef: para.extRef, _partOf: para.partOf}
+
+    Meteor.publish '_fields_data_form', (id) ->
+        Data.find {_id: id}
+
+    Meteor.publish '_fields_data', (fieldSpec) ->
+        fieldSelector = {}
+        fieldSelector._refId = 1
+        fieldSelector[fieldSpec.fieldName] = 1
+        existing = Data.find {_refId: fieldSpec.refId}, {fields: fieldSelector}
+
+        defaultValue = ''
+        if fieldSpec.defaultValue?
+            defaultValue = fieldSpec.defaultValue
+
+        if existing.count() is 0
+            id = _createForm fieldSpec.refId, fieldSpec.fieldName, defaultValue
+            existing = Data.find {_id: id}, {fields: fieldSelector}
+
+        existing
+
     @Data.allow
         insert: () ->
-            true 
+            false
         update: () ->
             true
         remove: () ->
             true
-            
-    @Changes.allow
+
+    @Lists.allow
         insert: () ->
-            true
+            false
         update: () ->
             true
         remove: () ->
             true
-    

@@ -18,10 +18,9 @@ Package.on_use(function (api) {
    //api.export('Fields');
    
    //api.add_files('fields-templates.html','client');
-   
+
    api.add_files('client-templates.html', ['client']);
-   api.add_files('client-unsaved.coffee', ['client']);
-   
+
    api.add_files('client-helpers.coffee', ['client']);
    
    api.add_files('collections.coffee', ['client', 'server']);
@@ -30,9 +29,7 @@ Package.on_use(function (api) {
    api.add_files('base.coffee',['client']);
    
    api.add_files('list.coffee',['client']);
-   
-   api.add_files('changes.coffee', ['client']);
-   
+
    api.add_files('simple-text.coffee',['client']);
 
    api.add_files('server-methods.coffee',['server']);

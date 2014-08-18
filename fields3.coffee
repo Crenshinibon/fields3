@@ -1,9 +1,7 @@
-Movies = new Meteor.Collection 'movies'
-Actors = new Meteor.Collection 'actors'
+@Movies = new Meteor.Collection 'movies'
+@Actors = new Meteor.Collection 'actors'
 
 if Meteor.isServer
-    console.log 'server test'
-    
     Meteor.publish 'movies', () ->
         Movies.find {}
     
@@ -28,44 +26,70 @@ if Meteor.isServer
     
             
 if Meteor.isClient
-    
+
     Meteor.autorun () ->
         Meteor.subscribe 'movies'
         Meteor.subscribe 'actors'
     
     UI.body.events
         'click .add-movie': (e) ->
-            Movies.insert {} 
+            Movies.insert {actors: []}
     
     Template.viewContent.movies = () ->
         Movies.find {}
     
     Template.viewContent.name = () ->
         new Fields.TextField
-            name: 'name'
+            fieldName: 'name'
+            refId: @_id
+
+    Template.editContent.name = () ->
+        new Fields.TextField
+            fieldName: 'name'
+            refId: @_id
+
+    Template.editContent.tagline = () ->
+        new Fields.TextField
+            fieldName: 'tagline'
             refId: @_id
 
     Template.editContent.movies = () ->
         Movies.find {}
         
-    Template.editContent.actors = () ->
+    Template.actorsList.actors = () ->
         self = @
-        list = new Fields.List 
-            name: 'actors' 
-            refId: self._id, 
-            items: Actors.find({movieId: self._id}).fetch()
+
+        list = new Fields.List
+            listName: 'actors'
+            refId: self._id,
+            items: self.actors
         
-        list.onAppend (event) ->
-            Actors.insert {movieId: self._id}
-        list.onRemove (event, element, pos) ->
-            Actors.remove {_id: element._id}
+        list.onAppend () ->
+            id = Actors.insert {}
+            Movies.update {_id: self._id}, {$push: {actors: id}}
+            id
+
+        #list.onRemove (element, pos) ->
+        #    Actors.remove {_id: element._id}
+        #    Movies.update {_id: self._id}, {$pull: {actors: element._id}}
 
         #list.sortBy
         #    field: 'actorName'
         #    dir: 1
+
         list
-        
-    Template.editContent.name = () ->
-        new Fields.TextField 
-            name: 'name'
-            refId: @_id
+
+    Template.actorsList.actorName = () ->
+        self = @
+        f = new Fields.TextField
+            fieldName: "actors"
+            id: self._id
+            partOf: self._refId
+
+        f
+
+    Template.actorsList.actorCountry = () ->
+        self = @
+        new Fields.TextField
+            fieldName: 'actorCountry'
+            refId: self._refId

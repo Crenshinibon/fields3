@@ -17,68 +17,54 @@
 <template name="editContent">
     <h1>Edit Movies</h1>
     {{#each movies}}
-    <h2>Movie: {{#field name}}{{unsavedValue}}{{/field}}</h2>
+    <h2>Movie: {{#field name}}{{value}}{{/field}}</h2>
     {{#field name}}
     <p>Name:&nbsp;
     {{#if ready}}
-    <span class="input-append">
-    <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
-    {{#if saveable}}
-    <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
-    {{/if}}
-    {{#if discardable}}
-    <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
-    {{/if}}
-    </span>
+    <input type="text" class="{{inputId}}" value="{{value}}" />
     {{/if}}
     </p>
     {{/field}}
-    
+    {{#field tagline}}
+    <p>Tagline:&nbsp;
+    {{#if ready}}
+    <input type="text" class="{{inputId}}" value="{{value}}" />
+    {{/if}}
+    </p>
+    {{/field}}
+    {{> actorsList}}
+    {{/each}}
+</template>
+
+
+<template name="actorsList">
     {{#list actors}}
     <h3>Actors:</h3>
     <ul class="thumbnails">
         {{#each items}}
         <li class="span4">
-        {{#field actorName}}
-        <div>
-        <span>Name:&nbsp;</span>
-        {{#if ready}}
-        <span class="input-append">
-        <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
-        {{#if saveable}}
-        <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
-        {{/if}}
-        {{#if discardable}}
-        <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
-        {{/if}}
-        </span>
-        {{/if}}
-        </div>
-        {{/field}}
-        
-        {{#field actorCountry}}
-        <div>
-        <span>Country:&nbsp;</span>
-        {{#if ready}}
-        <span class="input-append">
-        <input type="text" class="{{inputId}}" value="{{unsavedValue}}" />
-        {{#if saveable}}
-        <button class="btn btn-primary {{saveId}}"><i class="icon-ok icon-white"></i></button>
-        {{/if}}
-        {{#if discardable}}
-        <button class="btn {{discardId}}"><i class="icon-remove"></i></button>
-        {{/if}}
-        </span>
-        {{/if}}
-        </div>
-        {{/field}}
+            {{#field actorName}}
+            <div>
+                <span>Name:&nbsp;</span>
+                {{#if ready}}
+                <input type="text" class="{{inputId}}" value="{{value}}" />
+                {{/if}}
+            </div>
+            {{/field}}
+
+            {{#field actorCountry}}
+            <div>
+                <span>Country:&nbsp;</span>
+                {{#if ready}}
+                <input type="text" class="{{inputId}}" value="{{value}}" />
+                {{/if}}
+            </div>
+            {{/field}}
         </li>
         {{/each}}
     </ul>
     <button class="btn btn-small {{appendId}}"><i class="icon-plus"></i></button>
     {{/list}}
-    
-    {{/each}}
 </template>
 
 <template name="viewContent">
