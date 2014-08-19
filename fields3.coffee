@@ -81,9 +81,9 @@ if Meteor.isClient
 
     Template.actorsList.actorName = () ->
         self = @
+        console.log self
         f = new Fields.TextField
             fieldName: "actors"
-            id: self._id
             partOf: self._refId
 
         f
@@ -92,4 +92,4 @@ if Meteor.isClient
         self = @
         new Fields.TextField
             fieldName: 'actorCountry'
-            refId: self._refId
+            partOf: self._refId

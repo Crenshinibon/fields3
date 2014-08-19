@@ -11,16 +11,20 @@ class Fields._BaseField
         self._events.beforeUpdate = para.events?.beforeUpdate
         self._events.afterUpdate = para.events?.afterUpdate
 
-        self._refId = para.refId
         self._fieldName = para.fieldName
+
         self._partOf = para.partOf
+        if para.partOf?
+            self._refId = para.partOf
+        else
+            self._refId = para.refId
+
+        unless self._refId?
+            throw new Meteor.Error 404, 'Invalid Field Initialization! Missing refId prop!'
 
         self.inputId = "#{self._fieldName}#{self._refId}input"
 
-        unless para.partOf?
-            self._extRef = para.refId
-        else
-            self._extRef = para.extRef
+        console.log para
 
         fieldSpec =
             refId: self._refId

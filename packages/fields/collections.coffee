@@ -41,8 +41,8 @@ if Meteor.isServer
 
 
     Meteor.methods
-        _fields_init_ext_list_item: (para) ->
-            Data.insert {_refId: para.refId, _extRef: para.extRef, _partOf: para.partOf}
+        _fields_init_list_item: (para) ->
+            Data.insert {_refId: para.refId, _partOf: para.partOf}
 
     Meteor.publish '_fields_data_form', (id) ->
         Data.find {_id: id}
