@@ -32,26 +32,28 @@ if Meteor.isClient
         Meteor.subscribe 'actors'
     
     UI.body.events
-        'click .add-movie': (e) ->
+        'click .add-movie': () ->
             Movies.insert {actors: []}
     
     Template.viewContent.movies = () ->
         Movies.find {}
     
     Template.viewContent.name = () ->
+        Meteor.apply '_stupid', [], (e, r) ->
+            console.log '_stupid1:', e, r
         new Fields.TextField
             fieldName: 'name'
-            refId: @_id
+            extRef: @_id
 
     Template.editContent.name = () ->
         new Fields.TextField
             fieldName: 'name'
-            refId: @_id
+            extRef: @_id
 
     Template.editContent.tagline = () ->
         new Fields.TextField
             fieldName: 'tagline'
-            refId: @_id
+            extRef: @_id
 
     Template.editContent.movies = () ->
         Movies.find {}
@@ -81,7 +83,6 @@ if Meteor.isClient
 
     Template.actorsList.actorName = () ->
         self = @
-        console.log self
         f = new Fields.TextField
             fieldName: "actors"
             partOf: self._refId

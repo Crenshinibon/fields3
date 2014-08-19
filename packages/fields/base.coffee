@@ -12,32 +12,34 @@ class Fields._BaseField
         self._events.afterUpdate = para.events?.afterUpdate
 
         self._fieldName = para.fieldName
-
         self._partOf = para.partOf
-        if para.partOf?
-            self._refId = para.partOf
+        self._extRef = para.extRef
+
+        if para.id?
+            self._id = para.id
         else
-            self._refId = para.refId
+            unless self._extRef?
+                self._id = Random.id()
 
-        unless self._refId?
-            throw new Meteor.Error 404, 'Invalid Field Initialization! Missing refId prop!'
+        _init = () ->
+            self.inputId = "#{self._fieldName}#{self._id}input"
+            fieldSpec =
+                id: self._id
+                extRef: self._extRef
+                fieldName: self._fieldName
+            Meteor.autorun () ->
+                Meteor.subscribe '_fields_data', fieldSpec, () ->
+                    self._ready = true
+                    self._loadDeps.changed()
 
-        self.inputId = "#{self._fieldName}#{self._refId}input"
+        unless self._id?
+            Meteor.call '_fields_find_field_by_extRef', para, (error, result) ->
+                unless error?
+                    self._id = result
+                    _init()
+        else
+            _init()
 
-        console.log para
-
-        fieldSpec =
-            refId: self._refId
-            fieldName: self._fieldName
-
-        Meteor.autorun () ->
-            Meteor.subscribe '_fields_data', fieldSpec, () ->
-                self._ready = true
-                unless self._id?
-                    existing = Data.findOne({_refId: self._refId})
-                    self._id = existing._id
-
-                self._loadDeps.changed()
 
     loading: () ->
         !@ready()

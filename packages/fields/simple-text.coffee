@@ -1,5 +1,4 @@
 class Fields.TextField extends Fields._BaseField
-    _caretPos: 0
     constructor: (para) ->
         super para
         @createEvents()
