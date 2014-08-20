@@ -21,25 +21,35 @@ class Fields._BaseField
             unless self._extRef?
                 self._id = Random.id()
 
-        _init = () ->
+        if self._id?
             self.inputId = "#{self._fieldName}#{self._id}input"
+            self.createEvents()
+
+            self._subscribe()
+        else
+            self.inputId = "ext#{self._fieldName}#{self._extRef}input"
+            self.createEvents()
+
             fieldSpec =
-                id: self._id
                 extRef: self._extRef
                 fieldName: self._fieldName
-            Meteor.autorun () ->
-                Meteor.subscribe '_fields_data', fieldSpec, () ->
-                    self._ready = true
-                    self._loadDeps.changed()
 
-        unless self._id?
-            Meteor.call '_fields_find_field_by_extRef', para, (error, result) ->
-                unless error?
-                    self._id = result
-                    _init()
-        else
-            _init()
+            handle = Meteor.subscribe '_fields_data_by_extRef', fieldSpec, () ->
+                self._id = Data.findOne({_extRef: self._extRef})._id
+                handle.stop()
+                self._subscribe()
 
+    _subscribe: () ->
+        self = @
+        fieldSpec =
+            id: self._id
+            extRef: self._extRef
+            fieldName: self._fieldName
+
+        Meteor.autorun () ->
+            Meteor.subscribe '_fields_data', fieldSpec, () ->
+                self._ready = true
+                self._loadDeps.changed()
 
     loading: () ->
         !@ready()
@@ -70,3 +80,6 @@ class Fields._BaseField
         val[self._fieldName] = newValue
 
         Data.update {_id: self._id}, {$set: val}
+
+    #override this function in concrete implementations
+    createEvents: () ->

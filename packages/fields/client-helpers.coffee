@@ -10,8 +10,3 @@ Template._field._context = () ->
 Template._list._context = () ->
     @
 
-@_registerFieldEvents = (eventMap) ->
-    Template._field.events eventMap    
-    
-@_registerListEvents = (eventMap) ->
-    Template._list.events eventMap

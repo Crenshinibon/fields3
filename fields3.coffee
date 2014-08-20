@@ -39,8 +39,6 @@ if Meteor.isClient
         Movies.find {}
     
     Template.viewContent.name = () ->
-        Meteor.apply '_stupid', [], (e, r) ->
-            console.log '_stupid1:', e, r
         new Fields.TextField
             fieldName: 'name'
             extRef: @_id

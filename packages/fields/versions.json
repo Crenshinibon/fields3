@@ -6,7 +6,7 @@
     ],
     [
       "autoupdate",
-      "1.0.3"
+      "1.0.4"
     ],
     [
       "binary-heap",
@@ -14,7 +14,7 @@
     ],
     [
       "blaze",
-      "1.0.2"
+      "1.0.3"
     ],
     [
       "blaze-tools",
@@ -34,7 +34,7 @@
     ],
     [
       "deps",
-      "1.0.0"
+      "1.0.1"
     ],
     [
       "ejson",
@@ -70,7 +70,7 @@
     ],
     [
       "livedata",
-      "1.0.4"
+      "1.0.6"
     ],
     [
       "logging",
@@ -90,7 +90,7 @@
     ],
     [
       "mongo-livedata",
-      "1.0.2"
+      "1.0.3"
     ],
     [
       "observe-sequence",
@@ -154,6 +154,6 @@
     ]
   ],
   "pluginDependencies": [],
-  "toolVersion": "meteor-tool@1.0.12",
+  "toolVersion": "meteor-tool@1.0.14",
   "format": "1.0"
 }

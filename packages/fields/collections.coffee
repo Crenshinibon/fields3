@@ -46,41 +46,34 @@ if Meteor.isServer
             existing = Lists.find {_id: created._id}, {fields: {_items: 1, _refId: 1, _listName: 1}}
         existing
 
-
     Meteor.methods
         _fields_init_list_item: (para) ->
             _createForm para
-
-        _fields_find_field_by_extRef: (para) ->
-            existing = Data.findOne({_extRef: para.extRef})
-            unless existing?
-                unless para.id?
-                    para.id = Random.id()
-                _createForm para
-            else
-                existing._id
 
     Meteor.publish '_fields_data_form', (id) ->
         Data.find {_id: id}, {fields: {_id: 1, _partOf: 1, _extRef: 1}}
 
 
-    Meteor.publish '_fields_data', (fieldSpec) ->
+    _fieldSelector = (fieldName) ->
         fieldSelector = {}
         fieldSelector._id = 1
         fieldSelector._partOf = 1
         fieldSelector._extRef = 1
-        fieldSelector[fieldSpec.fieldName] = 1
-        existing = Data.find {_id: fieldSpec.id}, {fields: fieldSelector}
-        ###
-        defaultValue = ''
-        if fieldSpec.defaultValue?
-            defaultValue = fieldSpec.defaultValue
+        fieldSelector[fieldName] = 1
+        fieldSelector
 
-        if existing.count() is 0
+    Meteor.publish '_fields_data', (fieldSpec) ->
+        Data.find {_id: fieldSpec.id}, {fields: _fieldSelector(fieldSpec.fieldName)}
+
+    Meteor.publish '_fields_data_by_extRef', (fieldSpec) ->
+        existing = Data.find {_extRef: fieldSpec.extRef}, {fields: _fieldSelector(fieldSpec.fieldName)}
+
+        if existing.count() > 0
+            existing
+        else
+            fieldSpec.id = Random.id()
             _createForm fieldSpec
-            existing = Data.find {_id: fieldSpec.id}, {fields: fieldSelector}
-        ###
-        existing
+            Data.find {_id: fieldSpec.id}, {fields: _fieldSelector(fieldSpec)}
 
     @Data.allow
         insert: () ->
@@ -88,7 +81,7 @@ if Meteor.isServer
         update: () ->
             true
         remove: () ->
-            true
+            false
 
     @Lists.allow
         insert: () ->
@@ -96,4 +89,4 @@ if Meteor.isServer
         update: () ->
             true
         remove: () ->
-            true
+            false
