@@ -1,12 +1,7 @@
 _id -> THE internal reference id, the id of the object - the form -,
     that the current field belongs to. For entry points it's the same as extRef.
 
-OBSOLETE:
-    refId ->
-
-
 extRef -> An optional external reference. Mandatory for entry points,
     e.g. the external object a form is created for.
 
-MIGHT BE OBSOLETE AS WELL
 partOf -> An optional internal reference id, the current object is a part of.

@@ -2,7 +2,6 @@ class Fields.TextField extends Fields._BaseField
     constructor: (para) ->
         super para
 
-    #it's a hook called from base after connecting
     createEvents: () ->
         self = @
 
@@ -11,7 +10,6 @@ class Fields.TextField extends Fields._BaseField
             if self._events.beforeUpdate?
                 self._events.beforeUpdate.call @, self, e
 
-            console.log 'event fired', e
             self.update e.currentTarget.value
 
             if self._events.afterUpdate?
