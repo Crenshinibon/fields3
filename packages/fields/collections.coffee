@@ -17,7 +17,7 @@ if Meteor.isServer
 
     _createList = (listSpec) ->
         newList =
-            _refId: if listSpec.id? then listSpec.id else listSpec.extRef
+            _refId: listSpec.refId
             _listName: listSpec.listName
             _items: []
 
@@ -28,13 +28,8 @@ if Meteor.isServer
 
 
     Meteor.publish '_fields_lists', (listSpec) ->
-        existing = []
-        if listSpec.id?
-            existing = Lists.find {_refId: listSpec.id, _listName: listSpec.listName},
-                {fields: {_items: 1, _refId: 1, _listName: 1}}
-        else
-            existing = Lists.find {_refId: listSpec.extRef, _listName: listSpec.listName},
-                {fields: {_items: 1, _refId: 1, _listName: 1}}
+        existing = Lists.find {_refId: listSpec.refId, _listName: listSpec.listName},
+            {fields: {_items: 1, _refId: 1, _listName: 1}}
 
         if existing.count() is 0
             created = _createList listSpec

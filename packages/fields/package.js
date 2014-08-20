@@ -5,7 +5,8 @@ Package.describe({
 Package.on_use(function (api) {
    api.use('standard-app-packages', ['client', 'server']);
    api.use('coffeescript',['client','server']);
-   
+   api.use('reactive-dict',['client']);
+
    //libs
    //api.add_files('bootstrap-wysiwyg/bootstrap-wysiwyg.js', 'client');
    //api.add_files('bootstrap-wysiwyg/jquery.hotkeys.js', 'client');

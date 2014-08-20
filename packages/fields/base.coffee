@@ -2,12 +2,13 @@ Fields = {}
 @Fields = Fields
 
 class Fields._BaseField
-    _ready: false
-    _events: {beforeUpdate: null, afterUpdate: null}
-    _loadDeps: new Deps.Dependency
-
     constructor: (para) ->
         self = @
+        self._events = {beforeUpdate: null, afterUpdate: null}
+
+        self._localData = new ReactiveDict
+        self._localData.set 'ready', false
+
         self._events.beforeUpdate = para.events?.beforeUpdate
         self._events.afterUpdate = para.events?.afterUpdate
 
@@ -15,17 +16,18 @@ class Fields._BaseField
         self._partOf = para.partOf
         self._extRef = para.extRef
 
+        console.log para.listContext
         if para.listContext?
+            #conversion to string literal necessary
             self._id = para.listContext._id
-            self._extRef = para.listContext._extRef
-            self._partOf = para.listContext._partOf
-
-
-        if para.id? and not self._id
-            self._id = para.id
+            #self._extRef = para.listContext._extRef
+            #self._partOf = para.listContext._partOf
         else
-            unless self._extRef?
-                self._id = Random.id()
+            if para.id?
+                self._id = para.id
+            else
+                unless self._extRef?
+                    self._id = Random.id()
 
         if self._id?
             self.inputId = "#{self._fieldName}#{self._id}input"
@@ -50,12 +52,7 @@ class Fields._BaseField
 
         Meteor.autorun () ->
             Meteor.subscribe '_fields_data', fieldSpec, () ->
-                self._ready = true
-                self._loadDeps.changed()
-
-                if self._partOf?
-                    console.log 'sub returned2: ', self, @
-
+                self._localData.set 'ready', true
                 if onReady?
                     onReady.call self
 
@@ -63,17 +60,14 @@ class Fields._BaseField
         !@ready()
     
     ready: () ->
-        if @_partOf?
-            console.log 'ready called', @
-        @_loadDeps.depend()
-        @_ready
+        @_localData.get 'ready'
 
     value: () ->
         self = @
         
         value = '...loading...'
         if self.ready()
-            d = Data.findOne self._id
+            d = Data.findOne {_id: self._id}
             if d?
                 value = d[self._fieldName]
                 unless value?

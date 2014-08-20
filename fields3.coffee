@@ -80,11 +80,13 @@ if Meteor.isClient
         list
 
     Template.actorsList.actorName = () ->
+        self = @
         new Fields.TextField
             fieldName: 'actorName'
-            listContext: @
+            listContext: self
 
     Template.actorsList.actorCountry = () ->
+        self = @
         new Fields.TextField
             fieldName: 'actorCountry'
-            listContext: @
+            listContext: self
