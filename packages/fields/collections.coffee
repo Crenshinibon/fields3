@@ -16,35 +16,31 @@ if Meteor.isServer
         Data.insert newField
 
     _createList = (listSpec) ->
-        existingList = Lists.findOne {_id: listSpec.id, _listName: listSpec.listName}
-        unless existingList?
-            newList =
-                _refId: listSpec.refId
-                _listName: listSpec.listName
-                _items: []
-            id = Lists.insert newList
-            existingList = Lists.findOne {_id: id}
+        newList =
+            _refId: if listSpec.id? then listSpec.id else listSpec.extRef
+            _listName: listSpec.listName
+            _items: []
 
-        existingForm = Data.findOne {_id: listSpec.id}
-        unless existingForm?
-            id = _createForm listSpec
-            existingForm = Data.findOne {_id: id}
+        console.log newList
 
-        unless existingForm[listSpec.listName]?
-            val = {}
-            val[listSpec.listName] = existingList._id
-            Data.update {_id: existingForm._id}, {$set: val}
-
-        existingList
+        id = Lists.insert newList
+        Lists.findOne {_id: id}
 
 
-    #TODO
     Meteor.publish '_fields_lists', (listSpec) ->
-        existing = Lists.find {_refId: listSpec.refId, _listName: listSpec.listName}, {fields: {_items: 1, _refId: 1, _listName: 1}}
+        existing = []
+        if listSpec.id?
+            existing = Lists.find {_refId: listSpec.id, _listName: listSpec.listName},
+                {fields: {_items: 1, _refId: 1, _listName: 1}}
+        else
+            existing = Lists.find {_refId: listSpec.extRef, _listName: listSpec.listName},
+                {fields: {_items: 1, _refId: 1, _listName: 1}}
+
         if existing.count() is 0
             created = _createList listSpec
             existing = Lists.find {_id: created._id}, {fields: {_items: 1, _refId: 1, _listName: 1}}
         existing
+
 
     Meteor.methods
         _fields_init_list_item: (para) ->
@@ -63,10 +59,12 @@ if Meteor.isServer
         fieldSelector
 
     Meteor.publish '_fields_data', (fieldSpec) ->
-        Data.find {_id: fieldSpec.id}, {fields: _fieldSelector(fieldSpec.fieldName)}
+        Data.find {_id: fieldSpec.id},
+            {fields: _fieldSelector(fieldSpec.fieldName)}
 
     Meteor.publish '_fields_data_by_extRef', (fieldSpec) ->
-        existing = Data.find {_extRef: fieldSpec.extRef}, {fields: _fieldSelector(fieldSpec.fieldName)}
+        existing = Data.find {_extRef: fieldSpec.extRef},
+            {fields: _fieldSelector(fieldSpec.fieldName)}
 
         if existing.count() > 0
             existing

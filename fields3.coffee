@@ -61,8 +61,8 @@ if Meteor.isClient
 
         list = new Fields.List
             listName: 'actors'
-            refId: self._id,
-            items: self.actors
+            extRef: self._id,
+            extItems: self.actors
         
         list.onAppend () ->
             id = Actors.insert {}
@@ -80,15 +80,11 @@ if Meteor.isClient
         list
 
     Template.actorsList.actorName = () ->
-        self = @
-        f = new Fields.TextField
-            fieldName: "actors"
-            partOf: self._refId
-
-        f
+        new Fields.TextField
+            fieldName: 'actorName'
+            listContext: @
 
     Template.actorsList.actorCountry = () ->
-        self = @
         new Fields.TextField
             fieldName: 'actorCountry'
-            partOf: self._refId
+            listContext: @
