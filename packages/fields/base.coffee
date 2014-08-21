@@ -1,75 +1,52 @@
-Fields = {}
-@Fields = Fields
-
 class Fields._BaseField
     constructor: (para) ->
         self = @
         self._events = {beforeUpdate: null, afterUpdate: null}
-
-        self._localData = new ReactiveDict
-        self._localData.set 'ready', false
-
         self._events.beforeUpdate = para.events?.beforeUpdate
         self._events.afterUpdate = para.events?.afterUpdate
 
-        self._fieldName = para.fieldName
-        self._partOf = para.partOf
-        self._extRef = para.extRef
+        self._collection = Fields._getCollection para.form
+        self._para = para
 
-        console.log para.listContext
-        if para.listContext?
-            #conversion to string literal necessary
-            self._id = para.listContext._id
-            #self._extRef = para.listContext._extRef
-            #self._partOf = para.listContext._partOf
+        if self._para.id?
+            self.inputId = "#{self._para.fieldName}#{self._para.id}input"
         else
-            if para.id?
-                self._id = para.id
-            else
-                unless self._extRef?
-                    self._id = Random.id()
+            self.inputId = "ext#{self._para.fieldName}#{self._para.extRef}input"
 
-        if self._id?
-            self.inputId = "#{self._fieldName}#{self._id}input"
-            self._subscribe para.onReady
-        else
-            self.inputId = "ext#{self._fieldName}#{self._extRef}input"
-            fieldSpec =
-                extRef: self._extRef
-                fieldName: self._fieldName
+        self._subscribe()
 
-            handle = Meteor.subscribe '_fields_data_by_extRef', fieldSpec, () ->
-                self._id = Data.findOne({_extRef: self._extRef})._id
-                handle.stop()
-                self._subscribe para.onReady
-
-    _subscribe: (onReady) ->
+    _subscribe: () ->
         self = @
-        fieldSpec =
-            id: self._id
-            extRef: self._extRef
-            fieldName: self._fieldName
+        if self._para.id?
+            self._subHandle = Meteor.subscribe '_fields_form_field', self._para, () ->
+                unless self._para.extRef?
+                    f = self._collection.findOne {_id: self._para.id}
+                    self._para.extRef = f._extRef
+        else
+            self._subHandle = Meteor.subscribe '_fields_form_field_byExtRef', self._para, () ->
 
-        Meteor.autorun () ->
-            Meteor.subscribe '_fields_data', fieldSpec, () ->
-                self._localData.set 'ready', true
-                if onReady?
-                    onReady.call self
+                f = self._collection.findOne {_extRef: self._para.extRef}
+                self._para.id = f._id
+
+                @stop()
+                #resubscribe by id, might be unnecessary
+                self._subscribe()
+
 
     loading: () ->
         !@ready()
     
     ready: () ->
-        @_localData.get 'ready'
+        @_subHandle.ready
 
     value: () ->
         self = @
         
         value = '...loading...'
         if self.ready()
-            d = Data.findOne {_id: self._id}
+            d = self._collection.findOne {_id: self._para.id}
             if d?
-                value = d[self._fieldName]
+                value = d[self._para.fieldName]
                 unless value?
                     value = ''
             else
@@ -81,9 +58,9 @@ class Fields._BaseField
         self = @
 
         val = {}
-        val[self._fieldName] = newValue
+        val[self._para.fieldName] = newValue
 
-        Data.update {_id: self._id}, {$set: val}
+        self._collection.update {_id: self._para.id}, {$set: val}
 
     #override this function in concrete implementations
     createEvents: () ->

@@ -1,19 +1,76 @@
-@Data = new Meteor.Collection 'fields_data'
-@Lists = new Meteor.Collection 'fields_lists'
+#@Data = new Meteor.Collection 'fields_data'
+#@Lists = new Meteor.Collection 'fields_lists'
+
+
+Fields._collections = {}
+Fields._getCollection = (form) ->
+    unless form?
+        return new Meteor.Collection(null)
+
+    name = 'fields' + form
+    unless Fields._collections[name]?
+        col = new Meteor.Collection name
+        if Meteor.isServer
+            col.allow
+                insert: () ->
+                    false
+                update: () ->
+                    true
+                remove: () ->
+                    false
+
+        Fields._collections[name] = col
+        col
+    else
+        Fields._collections[name]
 
 if Meteor.isServer
 
     _createForm = (para) ->
-        console.log 'createForm:', para
         newField =
             _id: para.id
             _extRef: para.extRef
-            _partOf: para.partOf
 
         if para.fieldName?
             newField[para.fieldName] = para.fieldValue
 
-        Data.insert newField
+        console.log 'para:', para, 'field', newField
+        col = Fields._getCollection para.form
+        col.insert newField
+
+    _fieldSelector = (fieldName) ->
+        fieldSelector =
+            _id: 1
+            _partOf: 1
+            _extRef: 1
+        fieldSelector[fieldName] = 1
+        fieldSelector
+
+    Meteor.publish '_fields_form_field', (para) ->
+        col = Fields._getCollection para.form
+        existing = col.find {_id: para.id},
+            {fields: _fieldSelector(para.fieldName)}
+        if existing.count() is 0
+            _createForm para
+            existing = col.find {_id: para.id},
+                {fields: _fieldSelector(para.fieldName)}
+        existing
+
+    Meteor.publish '_fields_form_field_byExtRef', (para) ->
+        col = Fields._getCollection para.form
+        existing = col.find {_extRef: para.extRef},
+            {fields: _fieldSelector(para.fieldName)}
+
+        if existing.count() is 0
+            para.id = Random.id()
+            _createForm para
+            existing = col.find {_id: para.id},
+                {fields: _fieldSelector(para.fieldName)}
+        existing
+
+
+
+    ###
 
     _createList = (listSpec) ->
         newList =
@@ -45,41 +102,12 @@ if Meteor.isServer
         Data.find {_id: id}, {fields: {_id: 1, _partOf: 1, _extRef: 1}}
 
 
-    _fieldSelector = (fieldName) ->
-        fieldSelector = {}
-        fieldSelector._id = 1
-        fieldSelector._partOf = 1
-        fieldSelector._extRef = 1
-        fieldSelector[fieldName] = 1
-        fieldSelector
 
     Meteor.publish '_fields_data', (fieldSpec) ->
         Data.find {_id: fieldSpec.id},
             {fields: _fieldSelector(fieldSpec.fieldName)}
 
-    Meteor.publish '_fields_data_by_extRef', (fieldSpec) ->
-        existing = Data.find {_extRef: fieldSpec.extRef},
-            {fields: _fieldSelector(fieldSpec.fieldName)}
+    ###
 
-        if existing.count() > 0
-            existing
-        else
-            fieldSpec.id = Random.id()
-            _createForm fieldSpec
-            Data.find {_id: fieldSpec.id}, {fields: _fieldSelector(fieldSpec)}
 
-    @Data.allow
-        insert: () ->
-            false
-        update: () ->
-            true
-        remove: () ->
-            false
 
-    @Lists.allow
-        insert: () ->
-            false
-        update: () ->
-            true
-        remove: () ->
-            false

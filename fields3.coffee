@@ -27,9 +27,8 @@ if Meteor.isServer
             
 if Meteor.isClient
 
-    Meteor.autorun () ->
-        Meteor.subscribe 'movies'
-        Meteor.subscribe 'actors'
+    Meteor.subscribe 'movies'
+    Meteor.subscribe 'actors'
     
     UI.body.events
         'click .add-movie': () ->
@@ -41,22 +40,29 @@ if Meteor.isClient
     Template.viewContent.name = () ->
         new Fields.TextField
             fieldName: 'name'
+            form: 'movie'
             extRef: @_id
 
     Template.editContent.name = () ->
         new Fields.TextField
             fieldName: 'name'
+            form: 'movie'
             extRef: @_id
 
     Template.editContent.tagline = () ->
         new Fields.TextField
             fieldName: 'tagline'
+            form: 'movie'
             extRef: @_id
 
     Template.editContent.movies = () ->
         Movies.find {}
-        
+
+
+
     Template.actorsList.actors = () ->
+        ###
+
         self = @
 
         list = new Fields.List
@@ -79,6 +85,8 @@ if Meteor.isClient
 
         list
 
+
+        ###
     Template.actorsList.actorName = () ->
         self = @
         new Fields.TextField

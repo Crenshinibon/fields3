@@ -20,6 +20,9 @@ Package.on_use(function (api) {
    
    //api.add_files('fields-templates.html','client');
 
+
+   api.add_files('namespace.coffee',['client','server']);
+
    api.add_files('client-templates.html', ['client']);
 
    api.add_files('client-helpers.coffee', ['client']);
