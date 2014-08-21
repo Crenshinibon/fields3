@@ -31,10 +31,6 @@ if Meteor.isServer
             _id: para.id
             _extRef: para.extRef
 
-        if para.fieldName?
-            newField[para.fieldName] = para.fieldValue
-
-        console.log 'para:', para, 'field', newField
         col = Fields._getCollection para.form
         col.insert newField
 
