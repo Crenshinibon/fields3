@@ -1,29 +1,44 @@
 class Fields._BaseField
     constructor: (para) ->
         self = @
-        self._events = {beforeUpdate: null, afterUpdate: null}
-        self._events.beforeUpdate = para.events?.beforeUpdate
-        self._events.afterUpdate = para.events?.afterUpdate
 
-        self._collection = Fields._getCollection para.form
-        self._para = para
+        self._localData = new ReactiveDict
+        self._localData.set 'ready', false
 
-        if self._para.id?
-            self.inputId = "#{self._para.fieldName}#{self._para.id}input"
+        if para.listContext?
+            self._para =
+                events: para.events
+                id: para.listContext._id
+                extRef: para.listContext._extRef
+                created: para.listContext._created
+                form: para.listContext._form
+                index: para.listContext._index
         else
-            self.inputId = "ext#{self._para.fieldName}#{self._para.extRef}input"
+            self._para = para
+
+
+        self._events = {beforeUpdate: null, afterUpdate: null}
+        self._events.beforeUpdate = self._para.events?.beforeUpdate
+        self._events.afterUpdate = self._para.events?.afterUpdate
+
+        self._collection = Fields._getCollection self._para.form
+
+        self._baseUIID = Random.id()
+        self.inputId = "#{self._para.fieldName}#{self._baseUIID}input"
 
         self._subscribe()
 
-    _subscribe: () ->
+    _subscribe: () =>
         self = @
         if self._para.id?
-            self._subHandle = Meteor.subscribe '_fields_form_field', self._para, () ->
+            Meteor.subscribe '_fields_form_field', self._para, () ->
                 unless self._para.extRef?
                     f = self._collection.findOne {_id: self._para.id}
                     self._para.extRef = f._extRef
+
+                self._localData.set 'ready', true
         else
-            self._subHandle = Meteor.subscribe '_fields_form_field_byExtRef', self._para, () ->
+            Meteor.subscribe '_fields_form_field_byExtRef', self._para, () ->
 
                 f = self._collection.findOne {_extRef: self._para.extRef}
                 self._para.id = f._id
@@ -33,18 +48,22 @@ class Fields._BaseField
                 self._subscribe()
 
 
-    loading: () ->
+    loading: () =>
         !@ready()
     
-    ready: () ->
-        @_subHandle.ready
+    ready: () =>
+        @_localData.get 'ready'
 
-    value: () ->
+    docId: () =>
+        @_para.id
+
+    value: () =>
         self = @
         
         value = '...loading...'
         if self.ready()
-            d = self._collection.findOne {_id: self._para.id}
+            d = self._collection.findOne {_id: self.docId()}
+
             if d?
                 value = d[self._para.fieldName]
                 unless value?
@@ -54,7 +73,7 @@ class Fields._BaseField
         
         value
 
-    update: (newValue) ->
+    update: (newValue) =>
         self = @
 
         val = {}
@@ -63,4 +82,4 @@ class Fields._BaseField
         self._collection.update {_id: self._para.id}, {$set: val}
 
     #override this function in concrete implementations
-    createEvents: () ->
+    createEvents: () =>

@@ -43,6 +43,9 @@ if Meteor.isClient
             form: 'movie'
             extRef: @_id
 
+    Template.editContent.movies = () ->
+        Movies.find {}
+
     Template.editContent.name = () ->
         new Fields.TextField
             fieldName: 'name'
@@ -55,21 +58,13 @@ if Meteor.isClient
             form: 'movie'
             extRef: @_id
 
-    Template.editContent.movies = () ->
-        Movies.find {}
-
-
-
     Template.actorsList.actors = () ->
-        ###
-
         self = @
 
         list = new Fields.List
-            listName: 'actors'
-            extRef: self._id,
+            base: self._id,
             extItems: self.actors
-        
+
         list.onAppend () ->
             id = Actors.insert {}
             Movies.update {_id: self._id}, {$push: {actors: id}}
@@ -86,7 +81,6 @@ if Meteor.isClient
         list
 
 
-        ###
     Template.actorsList.actorName = () ->
         self = @
         new Fields.TextField

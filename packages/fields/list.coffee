@@ -2,100 +2,57 @@ class Fields.List
     constructor: (para) ->
         self = @
 
-        self._ready = false
-        self._callbacks = {append: null, prepend: null, insert: null, remove: null, move: null}
-        self._baseField = null
-        self._loadDeps = new Deps.Dependency
+        self._listPrefix = '_list_'
 
-        self._listName = para.listName
-        self._baseField = new Fields._BaseField
-            fieldName: para.listName
-            partOf: para.partOf
-            id: para.id
-            extRef: para.extRef
-            onReady: () ->
-                self._subscribe()
+        self._callbacks = {append: null, prepend: null, insert: null, remove: null, move: null}
+        self._para = para
+
+        self._localData = new ReactiveDict
+        self._localData.set 'ready', false
+
+        self._collection = Fields._getCollection para.base
+
+        self._itemsSubscribe()
 
         self._addControlElementIds()
-        @createEvents()
+        self.createEvents()
 
-    _addControlElementIds: () ->
+    _itemsSubscribe: () =>
         self = @
-        unless self._baseField._id?
-            self.appendId = "ext#{self._listName}#{self._baseField._extRef}append"
-            self.prependId = "ext#{self._listName}#{self._baseField._extRef}prepend"
-            self.insertId = "ext#{self._listName}#{self._baseField._extRef}insert"
-        else
-            self.appendId = "#{self._listName}#{self._baseField._id}append"
-            self.prependId = "#{self._listName}#{self._baseField._id}prepend"
-            self.insertId = "#{self._listName}#{self._baseField._id}insert"
+        Meteor.subscribe '_fields_list_items', self._para.base, () ->
+            self._localData.set 'ready', true
 
-    _subscribe: () ->
+    _addControlElementIds: () =>
         self = @
-        listSpec =
-            listName: self._listName
-            refId: self._baseField._id
+        self._baseUIID = Random.id()
+        self.appendId = "#{self._listName}#{self._baseUIID}append"
+        self.prependId = "#{self._listName}#{self._baseUIID}prepend"
 
-        Meteor.autorun () ->
-            Meteor.subscribe '_fields_lists', listSpec, () ->
-                list = Lists.findOne({_refId: self._baseField._id, _listName: self._listName})
-                self._listId = list._id
+    items: () =>
+        @_collection.find {}, {$sort: {index: 1}}
 
-                unless self._baseField.value() is self._listId
-                    self._baseField.update self._listId
-
-                #TODO recreate list items from extRef items
-                ###
-                if list._items.length > 0
-                    countReady = 0
-                    list._items.forEach (e) ->
-                        Meteor.subscribe '_fields_data_form', e, () ->
-                            countReady += 1
-                            if countReady is list._items.length
-                                self._ready = true
-                                self._loadDeps.changed()
-                else
-                ###
-
-                self._ready = true
-                self._loadDeps.changed()
-
-    loading: () ->
+    loading: () =>
         !@ready()
 
-    ready: () ->
-        @_loadDeps.depend()
-        @_ready
+    ready: () =>
+        @_localData.get 'ready'
 
-    items: () ->
-        self = @
-        result = []
-        if self.ready()
-            list = Lists.findOne {_id: self._listId}
-            result = list._items.map (e) ->
-                {
-                    _partOf: self._listId
-                    _id: e
-                }
-
-        result
-
-    onAppend: (cb) ->
+    onAppend: (cb) =>
         @_callbacks.append = cb
 
-    onPrepend: (cb) ->
+    onPrepend: (cb) =>
         @_callbacks.prepend = cb
 
-    onInsert: (cb) ->
+    onInsert: (cb) =>
         @_callbacks.insert = cb
 
-    onMove: (cb) ->
+    onMove: (cb) =>
         @_callbacks.move = cb
 
-    onRemove: (cb) ->
+    onRemove: (cb) =>
         @_callbacks.remove = cb
 
-    createEvents: () ->
+    createEvents: () =>
         self = @
         
         eventMap = {}
@@ -104,15 +61,15 @@ class Fields.List
             
         Template._list.events eventMap
     
-    append: () ->
+    append: () =>
         self = @
 
-        newForm = {id: Random.id(), partOf: self._listId}
+        newForm =
+            id: Random.id()
+            form: self._para.base
 
         #call external hook to get extRef id
         if self._callbacks.append?
             newForm.extRef = self._callbacks.append.call self
 
-        Meteor.call '_fields_init_list_item', newForm, (e, res) ->
-            Lists.update {_id: self._listId},
-                {$push: {_items: res}}
+        Meteor.call '_fields_init_list_item', newForm

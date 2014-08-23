@@ -4,7 +4,7 @@ class Fields.TextField extends Fields._BaseField
 
         @createEvents()
 
-    createEvents: () ->
+    createEvents: () =>
         self = @
 
         eventMap = {}
