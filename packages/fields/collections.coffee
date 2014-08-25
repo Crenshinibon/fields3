@@ -1,7 +1,3 @@
-#@Data = new Meteor.Collection 'fields_data'
-#@Lists = new Meteor.Collection 'fields_lists'
-
-
 Fields._collections = {}
 Fields._getCollection = (form) ->
     unless form?
@@ -28,8 +24,10 @@ if Meteor.isServer
 
     _nextIndex = (para) ->
         col = Fields._getCollection para.form
-        one = col.findOne {}, {$sort: {_index: -1}}
-        if one?._index?
+        one = col.findOne {_listName: para.listName},
+            {sort: {_index: -1}}
+
+        if one?
             one._index + 1
         else
             0
@@ -40,23 +38,20 @@ if Meteor.isServer
             _extRef: para.extRef
             _created: new Date
             _form: para.form
-            _index: _nextIndex para
+
+        if para.listName?
+            newField._listName = para.listName
+            newField._index = _nextIndex para
 
         col = Fields._getCollection para.form
         col.insert newField
 
     _fieldSelector = (fieldName) ->
-        fieldSelector =
-            _id: 1
-            _form: 1
-            _extRef: 1
-            _created: 1
-            _index: 1
+        fieldSelector = _itemSelector()
         fieldSelector[fieldName] = 1
         fieldSelector
 
-    _initField = (para) ->
-        col = Fields._getCollection para.form
+    _initField = (para, col) ->
         one = col.findOne {_id: para.id}
         unless one?[para.fieldName]?
             val = {}
@@ -73,7 +68,7 @@ if Meteor.isServer
             existing = col.find {_id: para.id},
                 {fields: _fieldSelector(para.fieldName)}
 
-        _initField para
+        _initField para, col
 
         existing
 
@@ -88,7 +83,7 @@ if Meteor.isServer
             existing = col.find {_id: para.id},
                 {fields: _fieldSelector(para.fieldName)}
 
-        _initField para
+        _initField para, col
 
         existing
 
@@ -98,52 +93,16 @@ if Meteor.isServer
         _id: 1
         _extRef: 1
         _form: 1
+        _listName: 1
         _created: 1
 
-    Meteor.publish '_fields_list_items', (base) ->
-        col = Fields._getCollection base
-        col.find {}, {fields: _itemSelector()}
+    Meteor.publish '_fields_list_items', (para) ->
+        col = Fields._getCollection para.base
+        col.find {_listName: para.listName}, {fields: _itemSelector()}
 
 
     Meteor.methods
         _fields_init_list_item: (para) ->
+            console.log para
             _createForm para
-
-###
-
-_createList = (listSpec) ->
-    newList =
-        _refId: listSpec.refId
-        _listName: listSpec.listName
-        _items: []
-
-    console.log newList
-
-    id = Lists.insert newList
-    Lists.findOne {_id: id}
-
-
-Meteor.publish '_fields_lists', (listSpec) ->
-    existing = Lists.find {_refId: listSpec.refId, _listName: listSpec.listName},
-        {fields: {_items: 1, _refId: 1, _listName: 1}}
-
-    if existing.count() is 0
-        created = _createList listSpec
-        existing = Lists.find {_id: created._id}, {fields: {_items: 1, _refId: 1, _listName: 1}}
-    existing
-
-
-
-Meteor.publish '_fields_data_form', (id) ->
-    Data.find {_id: id}, {fields: {_id: 1, _partOf: 1, _extRef: 1}}
-
-
-
-Meteor.publish '_fields_data', (fieldSpec) ->
-    Data.find {_id: fieldSpec.id},
-        {fields: _fieldSelector(fieldSpec.fieldName)}
-
-###
-
-
 

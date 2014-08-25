@@ -9,13 +9,12 @@ class Fields._BaseField
             self._para =
                 events: para.events
                 id: para.listContext._id
-                extRef: para.listContext._extRef
-                created: para.listContext._created
                 form: para.listContext._form
                 index: para.listContext._index
+                fieldName: para.fieldName
+                listContext: para.listContext
         else
             self._para = para
-
 
         self._events = {beforeUpdate: null, afterUpdate: null}
         self._events.beforeUpdate = self._para.events?.beforeUpdate
@@ -30,6 +29,7 @@ class Fields._BaseField
 
     _subscribe: () =>
         self = @
+
         if self._para.id?
             Meteor.subscribe '_fields_form_field', self._para, () ->
                 unless self._para.extRef?
@@ -49,7 +49,7 @@ class Fields._BaseField
 
 
     loading: () =>
-        !@ready()
+        not @ready()
     
     ready: () =>
         @_localData.get 'ready'
@@ -81,5 +81,3 @@ class Fields._BaseField
 
         self._collection.update {_id: self._para.id}, {$set: val}
 
-    #override this function in concrete implementations
-    createEvents: () =>

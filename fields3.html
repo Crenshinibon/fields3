@@ -43,23 +43,23 @@
     <ul class="thumbnails">
         {{#each items}}
         <li class="span4">
-            {{#field actorName}}
             <div>
                 <span>Name:&nbsp;</span>
+                {{#field actorName}}
                 {{#if ready}}
                 <input type="text" class="{{inputId}}" value="{{value}}" />
                 {{/if}}
+                {{/field}}
             </div>
-            {{/field}}
 
-            {{#field actorCountry}}
             <div>
                 <span>Country:&nbsp;</span>
+                {{#field actorCountry}}
                 {{#if ready}}
                 <input type="text" class="{{inputId}}" value="{{value}}" />
                 {{/if}}
+                {{/field}}
             </div>
-            {{/field}}
         </li>
         {{/each}}
     </ul>
