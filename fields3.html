@@ -33,6 +33,7 @@
     </p>
     {{/field}}
     {{> actorsList}}
+    {{> plotKeywords}}
     {{/each}}
 </template>
 
@@ -45,7 +46,27 @@
         {{> actor}}
         {{/each}}
     </ul>
-    <button class="btn btn-small {{appendId}}"><i class="icon-plus"></i></button>
+    <button class="btn btn-small {{appendId}}">
+        <i class="icon-plus"></i>
+    </button>
+    {{/list}}
+</template>
+
+<template name="plotKeywords">
+    <h3>Plot Keywords:</h3>
+    {{#list plotKeywords}}
+     <span>
+       {{#each items}}
+            {{#field keyword}}
+            {{#if ready}}
+            <input class="input-small {{inputId}}" type="text" value="{{value}}">
+            {{/if}}
+            {{/field}}
+       {{/each}}
+       <button class="btn btn-small {{appendId}}">
+            <i class="icon-plus"></i>
+       </button>
+    </span>
     {{/list}}
 </template>
 
@@ -68,7 +89,26 @@
             {{/if}}
             {{/field}}
         </div>
+        {{> quotes}}
     </li>
+</template>
+
+<template name="quotes">
+    <h4>Quotes:</h4>
+    {{#list quotes}}
+    {{#each items}}
+        <div>
+        {{#field quote}}
+        {{#if ready}}
+        <input class="input-xlarge {{inputId}}" type="text" value="{{value}}">
+        {{/if}}
+        {{/field}}
+        </div>
+    {{/each}}
+    <button class="btn btn-small {{appendId}}">
+        <i class="icon-plus"></i>
+    </button>
+    {{/list}}
 </template>
 
 <template name="viewContent">

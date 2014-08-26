@@ -68,3 +68,28 @@ if Meteor.isClient
                 fieldName: 'actorCountry'
                 listContext: self
 
+    Template.plotKeywords.helpers
+        plotKeywords: () ->
+            self = @
+            new Fields.List
+                base: self._id
+                listName: 'plotKeywords'
+
+        keyword: () ->
+            self = @
+            new Fields.TextField
+                fieldName: 'keyword'
+                listContext: self
+
+    Template.quotes.helpers
+        quotes: () ->
+            self = @
+            new Fields.List
+                base: self._id
+                listName: 'quotes'
+
+        quote: () ->
+            self = @
+            new Fields.TextField
+                fieldName: 'quote'
+                listContext: self
