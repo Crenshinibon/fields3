@@ -28,8 +28,10 @@ class Fields.List
 
     items: () =>
         self = @
+
         self._collection.find {_listName: self._para.listName},
-            {sort: {_index: -1}}
+            {sort: {_index: 1}, fields: {_index: 1, _form: 1, _id: 1, _listName: 1}}
+
 
     loading: () =>
         !@ready()

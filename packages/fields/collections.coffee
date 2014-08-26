@@ -103,6 +103,5 @@ if Meteor.isServer
 
     Meteor.methods
         _fields_init_list_item: (para) ->
-            console.log para
             _createForm para
 

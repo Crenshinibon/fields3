@@ -55,6 +55,7 @@ if Meteor.isClient
                 base: self._id,
                 listName: 'actors'
 
+    Template.actor.helpers
         actorName: () ->
             self = @
             new Fields.TextField
@@ -66,9 +67,4 @@ if Meteor.isClient
             new Fields.TextField
                 fieldName: 'actorCountry'
                 listContext: self
-
-
-    Template.actorsList.rendered = () ->
-        inst  = this.$('input')
-        console.log inst
 

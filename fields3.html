@@ -42,29 +42,33 @@
     <h3>Actors:</h3>
     <ul class="thumbnails">
         {{#each items}}
-        <li class="span4">
-            <div>
-                <span>Name:&nbsp;</span>
-                {{#field actorName}}
-                {{#if ready}}
-                <input type="text" class="{{inputId}}" value="{{value}}" />
-                {{/if}}
-                {{/field}}
-            </div>
-
-            <div>
-                <span>Country:&nbsp;</span>
-                {{#field actorCountry}}
-                {{#if ready}}
-                <input type="text" class="{{inputId}}" value="{{value}}" />
-                {{/if}}
-                {{/field}}
-            </div>
-        </li>
+        {{> actor}}
         {{/each}}
     </ul>
     <button class="btn btn-small {{appendId}}"><i class="icon-plus"></i></button>
     {{/list}}
+</template>
+
+<template name="actor">
+    <li class="span4">
+        <div>
+            <span>Name:&nbsp;</span>
+            {{#field actorName}}
+            {{#if ready}}
+            <input type="text" class="{{inputId}}" value="{{value}}" />
+            {{/if}}
+            {{/field}}
+        </div>
+
+        <div>
+            <span>Country:&nbsp;</span>
+            {{#field actorCountry}}
+            {{#if ready}}
+            <input type="text" class="{{inputId}}" value="{{value}}" />
+            {{/if}}
+            {{/field}}
+        </div>
+    </li>
 </template>
 
 <template name="viewContent">
