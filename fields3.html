@@ -17,26 +17,30 @@
 <template name="editContent">
     <h1>Edit Movies</h1>
     {{#each movies}}
-    <h2>Movie: {{#field name}}{{value}}{{/field}}</h2>
-    {{#field name}}
+    <h2>Movie: {{#textField name}}{{value}}{{/textField}}</h2>
+    {{#textField name}}
     <p>Name:&nbsp;
     {{#if ready}}
     <input type="text" class="{{inputId}}" value="{{value}}" />
     {{/if}}
     </p>
-    {{/field}}
-    {{#field tagline}}
+    {{/textField}}
+    {{#textField tagline}}
     <p>Tagline:&nbsp;
     {{#if ready}}
     <input type="text" class="{{inputId}}" value="{{value}}" />
     {{/if}}
     </p>
-    {{/field}}
+    {{/textField}}
+    {{#textArea summary}}
+    {{#if ready}}
+    <div class="{{inputId}}">{{value}}</div>
+    {{/if}}
+    {{/textArea}}
     {{> actorsList}}
     {{> plotKeywords}}
     {{/each}}
 </template>
-
 
 <template name="actorsList">
     {{#list actors}}
@@ -57,11 +61,11 @@
     {{#list plotKeywords}}
      <span>
        {{#each items}}
-            {{#field keyword}}
+            {{#textField keyword}}
             {{#if ready}}
             <input class="input-small {{inputId}}" type="text" value="{{value}}">
             {{/if}}
-            {{/field}}
+            {{/textField}}
        {{/each}}
        <button class="btn btn-small {{appendId}}">
             <i class="icon-plus"></i>
@@ -74,20 +78,20 @@
     <li class="span4">
         <div>
             <span>Name:&nbsp;</span>
-            {{#field actorName}}
+            {{#textField actorName}}
             {{#if ready}}
             <input type="text" class="{{inputId}}" value="{{value}}" />
             {{/if}}
-            {{/field}}
+            {{/textField}}
         </div>
 
         <div>
             <span>Country:&nbsp;</span>
-            {{#field actorCountry}}
+            {{#textField actorCountry}}
             {{#if ready}}
             <input type="text" class="{{inputId}}" value="{{value}}" />
             {{/if}}
-            {{/field}}
+            {{/textField}}
         </div>
         {{> quotes}}
     </li>
@@ -98,11 +102,11 @@
     {{#list quotes}}
     {{#each items}}
         <div>
-        {{#field quote}}
+        {{#textField quote}}
         {{#if ready}}
         <input class="input-xlarge {{inputId}}" type="text" value="{{value}}">
         {{/if}}
-        {{/field}}
+        {{/textField}}
         </div>
     {{/each}}
     <button class="btn btn-small {{appendId}}">
@@ -115,9 +119,9 @@
     <h1>View Movies</h1>
     {{#each movies}}
     <p>Some content</p>
-    {{#field name}}
+    {{#textField name}}
     <span>Name:&nbsp;</span><span>{{value}}</span>
-    {{/field}}
+    {{/textField}}
     <hr/>
     {{/each}}
 </template>

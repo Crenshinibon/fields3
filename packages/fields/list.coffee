@@ -74,3 +74,8 @@ class Fields.List
                 listName: self._para.listName
 
             Meteor.call '_fields_init_list_item', newItem
+    ###
+    TODO add further functionality (prepend, insert, remove)
+    TODO add resorting capabilities
+    TODO add drag and drop stuff
+    ###

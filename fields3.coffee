@@ -47,6 +47,11 @@ if Meteor.isClient
                 fieldName: 'tagline'
                 form: 'movie'
                 extRef: @_id
+        summary: () ->
+            new Fields.TextArea
+                fieldName: 'summary'
+                form: 'movie'
+                extRef: @_id
 
     Template.actorsList.helpers
         actors: () ->
