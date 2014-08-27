@@ -21,6 +21,15 @@
     {{/if}}
     </p>
     {{/textField}}
+    {{#select genre}}
+    <p>Genre:
+    <select>
+        {{#each options}}
+        <option {{selected}}>{{option}}</option>
+        {{/each}}
+    </select>
+    </p>
+    {{/select}}
     {{#textField tagline}}
     <p>Tagline:&nbsp;
     {{#if ready}}
@@ -42,14 +51,7 @@
 
 <template name="toolbar">
     <div class="toolbar btn-toolbar {{toolbarId}}" data-role="editor-toolbar" data-target="#{{inputId}}">
-        <div class="btn-group">
-            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></button>
-            <ul class="dropdown-menu">
-                <li><button data-edit="fontSize 5"><span>Groß</span></button></li>
-                <li><button data-edit="fontSize 3"><span font-size="3">Normal</span></button></li>
-                <li><button data-edit="fontSize 1"><span font-size="1">Klein</span></button></li>
-            </ul>
-        </div>
+        <!--Avoid anchor tags, they result in strange focus behaviour-->
         <div class="btn-group">
             <button class="btn btn-small" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></button>
             <button class="btn btn-small" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></button>

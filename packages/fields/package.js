@@ -32,7 +32,6 @@ Package.on_use(function (api) {
 
     api.add_files('collections.coffee', ['client', 'server']);
 
-
     api.add_files('base.coffee',['client']);
 
     api.add_files('list.coffee',['client']);
@@ -40,6 +39,8 @@ Package.on_use(function (api) {
     api.add_files('simple-text.coffee',['client']);
 
     api.add_files('text-area.coffee',['client']);
+
+    api.add_files('select.coffee',['client']);
 
     api.add_files('server-methods.coffee',['server']);
 

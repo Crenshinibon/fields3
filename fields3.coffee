@@ -1,9 +1,10 @@
 @Movies = new Meteor.Collection 'movies'
+@Genres = new Meteor.Collection 'genres'
 
 if Meteor.isServer
     Meteor.publish 'movies', () ->
         Movies.find {}
-    
+
     Movies.allow
         insert: (userId, doc) ->
             false
@@ -11,6 +12,24 @@ if Meteor.isServer
             true
         remove: (userId, doc) ->
             true
+
+    Meteor.publish 'genres', () ->
+        Genres.find {}
+
+    Genres.allow
+        insert: (userId, doc) ->
+            false
+        update: (userId, doc, fieldNames, modifier) ->
+            false
+        remove: (userId, doc) ->
+            false
+
+    Meteor.startup () ->
+        if Genres.find({}).count() is 0
+            Genres.insert {name: 'Action'}
+            Genres.insert {name: 'Thriller'}
+            Genres.insert {name: 'Drama'}
+            Genres.insert {name: 'Comedy'}
 
     Meteor.methods
         'create_movie': () ->
@@ -20,6 +39,7 @@ if Meteor.isServer
 if Meteor.isClient
 
     Meteor.subscribe 'movies'
+    Meteor.subscribe 'genres'
 
     UI.body.events
         'click .add-movie': () ->
@@ -52,6 +72,12 @@ if Meteor.isClient
                 fieldName: 'summary'
                 form: 'movie'
                 extRef: @_id
+        genre: () ->
+            new Fields.Select
+                fieldName: 'genre'
+                form: 'movie'
+                extRef: @_id
+                optionsSource: Genres.find {}, {fields: {name: 1}}
 
     Template.actorsList.helpers
         actors: () ->
@@ -98,3 +124,4 @@ if Meteor.isClient
             new Fields.TextField
                 fieldName: 'quote'
                 listContext: self
+

@@ -1,28 +1,31 @@
-UI.registerHelper 'textField', (para) ->
+UI.registerHelper 'textField', () ->
     Template._textField
     
-UI.registerHelper 'list', (para) ->
+UI.registerHelper 'list', () ->
     Template._list
 
-UI.registerHelper 'textArea', (para) ->
+UI.registerHelper 'textArea', () ->
     Template._textArea
+
+UI.registerHelper 'select', () ->
+    Template._select
 
 Template._textArea.rendered = () ->
     ta = @data
     inputId = ta.inputId
     clazz = ".#{inputId}"
     ele = $ clazz
-    ele.wysiwyg()
+    ele.wysiwyg
+        toolbarSelector: ".#{ta.toolbarId}"
 
 Template._textArea.events
     'input div': (e) ->
-        console.log 'input works: ', e
         newValue = $(e.currentTarget).cleanHtml()
 
         @markChange newValue
 
 Template._textField.events
-    'keyup input': (e) ->
+    'input input': (e) ->
         field = @
 
         if field._events.beforeUpdate?
@@ -34,3 +37,8 @@ Template._textField.events
             field._events.afterUpdate.call field, e
 
 
+Template._select.events
+    'change select': (e) ->
+        field = @
+        newValue = e.currentTarget.value
+        field.update newValue
