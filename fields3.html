@@ -29,9 +29,11 @@
     </p>
     {{/textField}}
     {{#textArea summary}}
-    <div>Description:</div>
+    <div>Description:&nbsp;<span>
+        {{#if stalling}}<i class="fa fa-cog fa-spin"></i>{{/if}}
+    </span></div>
     {{> toolbar}}
-    <div class="editor {{inputId}}">{{#if ready}}{{{value}}}{{else}}...loading...{{/if}}</div>
+    <div class="editor {{inputId}}">{{#if ready}}{{{valueSnapshot}}}{{else}}...loading...{{/if}}</div>
     {{/textArea}}
     {{> actorsList}}
     {{> plotKeywords}}
@@ -41,30 +43,30 @@
 <template name="toolbar">
     <div class="toolbar btn-toolbar {{toolbarId}}" data-role="editor-toolbar" data-target="#{{inputId}}">
         <div class="btn-group">
-            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></button>
             <ul class="dropdown-menu">
-                <li><a data-edit="fontSize 5"><font size="5">Groß</font></a></li>
-                <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
-                <li><a data-edit="fontSize 1"><font size="1">Klein</font></a></li>
+                <li><button data-edit="fontSize 5"><span>Groß</span></button></li>
+                <li><button data-edit="fontSize 3"><span font-size="3">Normal</span></button></li>
+                <li><button data-edit="fontSize 1"><span font-size="1">Klein</span></button></li>
             </ul>
         </div>
         <div class="btn-group">
-            <a class="btn btn-small" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
-            <a class="btn btn-small" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
-            <a class="btn btn-small" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
-            <a class="btn btn-small" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+            <button class="btn btn-small" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></button>
+            <button class="btn btn-small" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></button>
+            <button class="btn btn-small" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></button>
+            <button class="btn btn-small" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></button>
         </div>
         <div class="btn-group">
-            <a class="btn btn-small" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
-            <a class="btn btn-small" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
-            <a class="btn btn-small" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-outdent"></i></a>
-            <a class="btn btn-small" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+            <button class="btn btn-small" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></button>
+            <button class="btn btn-small" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></button>
+            <button class="btn btn-small" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-outdent"></i></button>
+            <button class="btn btn-small" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></button>
         </div>
         <div class="btn-group">
-            <a class="btn btn-small" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
-            <a class="btn btn-small" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
-            <a class="btn btn-small" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
-            <a class="btn btn-small" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+            <button class="btn btn-small" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></button>
+            <button class="btn btn-small" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></button>
+            <button class="btn btn-small" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></button>
+            <button class="btn btn-small" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></button>
         </div>
         <!-- saved indicator? -->
     </div>

@@ -18,7 +18,8 @@ Template._textArea.events
     'input div': (e) ->
         console.log 'input works: ', e
         newValue = $(e.currentTarget).cleanHtml()
-        @update newValue
+
+        @markChange newValue
 
 Template._textField.events
     'keyup input': (e) ->
