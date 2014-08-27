@@ -23,6 +23,7 @@ class Fields._BaseField
         self._collection = Fields._getCollection self._para.form
 
         self._baseUIID = Random.id()
+        self.fieldName = self._para.fieldName
         self.inputId = "#{self._para.fieldName}#{self._baseUIID}input"
 
         self._subscribe()

@@ -1,15 +1,11 @@
 <head>
     <title>Fields3 Demo</title>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
 <body>
     <p><button class='button add-movie'>Add Movie</button></p>
-    
-    <!-- two primary use cases -->
-    <!-- EDITING a.k.a. entering the content -->
     {{> editContent}}
-    
-    <!-- VIEWING a.k.a. accessing/displaying the content -->
     {{> viewContent}}
     
 </body>
@@ -33,13 +29,45 @@
     </p>
     {{/textField}}
     {{#textArea summary}}
-    {{#if ready}}
-    <div class="{{inputId}}">{{value}}</div>
-    {{/if}}
+    <div>Description:</div>
+    {{> toolbar}}
+    <div class="editor {{inputId}}">{{#if ready}}{{{value}}}{{else}}...loading...{{/if}}</div>
     {{/textArea}}
     {{> actorsList}}
     {{> plotKeywords}}
     {{/each}}
+</template>
+
+<template name="toolbar">
+    <div class="toolbar btn-toolbar {{toolbarId}}" data-role="editor-toolbar" data-target="#{{inputId}}">
+        <div class="btn-group">
+            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a data-edit="fontSize 5"><font size="5">Groß</font></a></li>
+                <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                <li><a data-edit="fontSize 1"><font size="1">Klein</font></a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-small" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+            <a class="btn btn-small" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
+            <a class="btn btn-small" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
+            <a class="btn btn-small" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-small" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+            <a class="btn btn-small" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
+            <a class="btn btn-small" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-outdent"></i></a>
+            <a class="btn btn-small" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-small" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+            <a class="btn btn-small" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+            <a class="btn btn-small" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+            <a class="btn btn-small" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+        </div>
+        <!-- saved indicator? -->
+    </div>
 </template>
 
 <template name="actorsList">

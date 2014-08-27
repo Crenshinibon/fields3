@@ -7,6 +7,19 @@ UI.registerHelper 'list', (para) ->
 UI.registerHelper 'textArea', (para) ->
     Template._textArea
 
+Template._textArea.rendered = () ->
+    ta = @data
+    inputId = ta.inputId
+    clazz = ".#{inputId}"
+    ele = $ clazz
+    ele.wysiwyg()
+
+Template._textArea.events
+    'input div': (e) ->
+        console.log 'input works: ', e
+        newValue = $(e.currentTarget).cleanHtml()
+        @update newValue
+
 Template._textField.events
     'keyup input': (e) ->
         field = @
